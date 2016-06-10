@@ -1,0 +1,32 @@
+{
+  "name": "sequelize-user",
+  "version": "1.0.0",
+  "description": "manage a user table with built-in methods to check unicity, encrypt password, ",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meme-ppm/squelize-user.git"
+  },
+  "keywords": [
+    "sequelize"
+  ],
+  "author": "Mémé",
+  "license": "APACHE2",
+  "bugs": {
+    "url": "https://github.com/meme-ppm/squelize-user/issues"
+  },
+  "homepage": "https://github.com/meme-ppm/squelize-user#readme",
+  "dependencies": {
+    "crypto": "0.0.3",
+    "sequelize": "^3.23.3",
+    "sequelize-unic-action": "^1.0.1",
+    "shortid": "^2.2.6"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "pg": "^5.0.0"
+  }
+}
