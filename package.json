@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/meme-ppm/squelize-user#readme",
   "dependencies": {
+    "bcrypt-then": "^1.1.0",
     "crypto": "0.0.3",
     "sequelize": "^3.23.3",
     "sequelize-unic-action": "^1.0.1",
