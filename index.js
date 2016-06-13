@@ -1,6 +1,9 @@
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt-then');
 var unicActionModel = require('sequelize-unic-action');
+var nodeMailer = require('nodemailer');
+var mailTransporter;
+var options;
 var UnicAction = null;
 
 var mergeModel = function(model){
@@ -23,7 +26,22 @@ var methods={
   classMethods:{
     createUser: function(obj){
         obj.unicAction={action:'validateEmail'};
-        return this.create(obj, {include:[{model: UnicAction, as:'unicAction'}]});
+        var createPr =  this.create(obj, {include:[{model: UnicAction, as:'unicAction'}]});
+        var emailTemplatePr = createPr.then(function(user){
+          return options.email.template.validateEmail.render(user);
+        });
+        var emailPr = emailTemplatePr.then(function(render){
+          var mailOptions = {
+            from: options.email.sender,
+            to: options.email.debug?options.email.debugReceiver:user.email,
+            subject: render.subject,
+            text: render.text,
+            html: render.html
+          };
+          return mailTransporter.sendMail(mailOptions).then(){
+            return createPr.value();
+          };
+        });
     },
     findUser:function(loginEmail, password){
        var find = this.findOne({where:{$or:[{login: loginEmail},{email: loginEmail}]}});
@@ -49,6 +67,8 @@ var methods={
 
 
 module.exports.define=function(db, tableName, options){
+    options = options;
+    mailTransporter = nodeMailer.createTransport(options.email.smtp);
     var User = db.define(tableName, mergeModel({}), methods);
     UnicAction = db.define('user_unic_action', unicActionModel.model, unicActionModel.methods);
     User.hasMany(UnicAction,{as:"unicAction"});

@@ -6,6 +6,9 @@ var userModel = require('../index.js');
 var User = userModel.define(db, 'user');
 var bcrypt = require("bcrypt-then");
 
+var settings = require('./settings.js');
+var nodeMailer = require('nodemailer')
+
 describe("Test user creation >>", function(){
    it('initialize the DB', function () {
       return db.drop().then(function(){
@@ -79,6 +82,22 @@ describe("Test user creation >>", function(){
         assert.equal(error.message, "user.wrongPassword");
      })
    })
-
+   it('test node mailer', function () {
+     var transporter = nodeMailer.createTransport(settings.smtp);
+     var mailOptions = {
+    from: settings.sender, // sender address
+    to: settings.receiver, // list of receivers
+    subject: 'Hello ✔', // Subject line
+    text: 'Hello world', // plaintext body
+    html: '<b>Hello world</b>' // html body
+};
+     return transporter.sendMail(mailOptions).then(function(info){
+       should.exist(info);
+       console.log(">> Info: ", info)
+     }).catch(function(error){
+       console.log(">> Error: ", error)
+       should.not.exist(error);
+     })
+   })
 
 })

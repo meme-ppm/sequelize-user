@@ -22,6 +22,7 @@
   "dependencies": {
     "bcrypt-then": "^1.1.0",
     "crypto": "0.0.3",
+    "nodemailer": "^2.4.2",
     "sequelize": "^3.23.3",
     "sequelize-unic-action": "^1.0.1",
     "shortid": "^2.2.6"
