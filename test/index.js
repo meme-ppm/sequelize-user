@@ -1,13 +1,31 @@
 var assert = require('chai').assert;
 var should = require('chai').should();
+
+var settings = require('./settings.js');
+var nodeMailer = require('nodemailer');
+/**
+Email template test
+**/
+var path = require('path');
+var EmailTemplate = require('email-templates').EmailTemplate;
+var templatesDir = path.resolve(__dirname, '.', 'emailTemplate')
+var templateConfirmEmail = new EmailTemplate(path.join(templatesDir, 'confirmEmail'))
+
 var Sequelize = require('sequelize');
 var db = new Sequelize('postgresql://test1:test1@localhost/test1');
 var userModel = require('../index.js');
-var User = userModel.define(db, 'user');
-var bcrypt = require("bcrypt-then");
 
-var settings = require('./settings.js');
-var nodeMailer = require('nodemailer')
+var User = userModel.define(db, 'user', {
+                                          email:{
+                                            smtp:settings.smtp,
+                                            sender: settings.sender,
+                                            debug:true,
+                                            debugReceiver:settings.receiver,
+                                            template:{
+                                                      validateEmail: templateConfirmEmail
+                                                    }
+                                              }
+                                          });
 
 describe("Test user creation >>", function(){
    it('initialize the DB', function () {
@@ -45,13 +63,7 @@ describe("Test user creation >>", function(){
        should.exist(error);
      })
    })
-   it('bcrypt - hash password and test with similar', function () {
-     return bcrypt.hash("toto").then(function(hash){
-       return bcrypt.compare("toto", hash).then(function(result){
-         assert.equal(result, true);
-       })
-     })
-   })
+
    it('find user tarama with good login/password', function () {
      return User.findUser('tarama','toto').then(function(user){
         should.exist(user);
@@ -82,15 +94,15 @@ describe("Test user creation >>", function(){
         assert.equal(error.message, "user.wrongPassword");
      })
    })
-   it('test node mailer', function () {
+   /*it('test node mailer', function () {
      var transporter = nodeMailer.createTransport(settings.smtp);
      var mailOptions = {
-    from: settings.sender, // sender address
-    to: settings.receiver, // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world', // plaintext body
-    html: '<b>Hello world</b>' // html body
-};
+       from: settings.sender, // sender address
+       to: settings.receiver, // list of receivers
+       subject: 'Hello ✔', // Subject line
+       text: 'Hello world', // plaintext body
+       html: '<b>Hello world</b>' // html body
+     };
      return transporter.sendMail(mailOptions).then(function(info){
        should.exist(info);
        console.log(">> Info: ", info)
@@ -98,6 +110,6 @@ describe("Test user creation >>", function(){
        console.log(">> Error: ", error)
        should.not.exist(error);
      })
-   })
+   })*/
 
 })
