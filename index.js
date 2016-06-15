@@ -39,9 +39,7 @@ var methods={
             text: render.text,
             html: render.html
           };
-            console.log("mailOptions ", mailOptions);
           return mailTransporter.sendMail(mailOptions).then(function(email){
-            console.log("email ", email);
             return createPr.value();
           });
         });
@@ -62,6 +60,12 @@ var methods={
          }
          return results[0];
        })
+    },
+    validateHash:function(hash, action){
+      return UnicAction.validateHash(hash,action);
+    },
+    findUserFromHash:function(hash,action){
+      return this.findOne({include:[{model: UnicAction, as:'unicAction', where:unicActionModel.generateWhereFromHash(hash,action)}]});
     }
   },
   instanceMethods:{

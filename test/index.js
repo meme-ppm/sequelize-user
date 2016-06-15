@@ -94,6 +94,24 @@ describe("Test user creation >>", function(){
         assert.equal(error.message, "user.wrongPassword");
      })
    })
+   it('create a user and test to find user from hash', function () {
+     return User.createUser({login:"tarama2", email:"tarama2@gmail.com", password:"toto"}).then(function(result){
+       should.exist(result);
+       rPlain = result.get({plain:true});
+       return User.findUserFromHash(rPlain.unicAction[0].hash).then(function(result){
+         should.exist(result);
+         result.should.be.an('object');
+         should.exist(result.unicAction)
+         var unic = result.get({ plain: true}).unicAction[0];
+         should.exist(unic.hash);
+         should.exist(unic.action);
+         should.exist(unic.limitDateValidity);
+       });
+    }).catch(function(error){
+      console.log("error ", error);
+      should.not.exist(error);
+    })
+   })
    /*it('test node mailer', function () {
      var transporter = nodeMailer.createTransport(settings.smtp);
      var mailOptions = {

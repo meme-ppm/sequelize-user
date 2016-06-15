@@ -23,7 +23,7 @@
     "bcrypt-then": "^1.1.0",
     "nodemailer": "^2.4.2",
     "sequelize": "^3.23.3",
-    "sequelize-unic-action": "^1.0.1"
+    "sequelize-unic-action": "^1.0.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
