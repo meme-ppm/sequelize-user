@@ -66,6 +66,33 @@ var methods={
     },
     findUserFromHash:function(hash,action){
       return this.findOne({include:[{model: UnicAction, as:'unicAction', where:unicActionModel.generateWhereFromHash(hash,action)}]});
+    },
+    resetPassword:function(email){
+      var findPr = this.findOne({where:{email: email}});
+      var addUnicActionPr = findPr.then(function(user){
+        if(user == null){
+          throw new Sequelize.ValidationError("user.notFound");
+        }
+        return user.createUnicAction({action:"resetPassword"});
+      })
+      var emailTemplatePr = addUnicActionPr.then(function(user){
+        var userPlain = findPr.value().get({ plain: true});
+        var unicActionPlain = addUnicActionPr.value().get({ plain: true});
+        return _options.email.template.resetPassword.render({user: user, unicAction: unicActionPlain});
+      });
+      var emailPr = emailTemplatePr.then(function(render){
+        var mailOptions = {
+          from: _options.email.sender,
+          to: _options.email.debug?_options.email.debugReceiver:user.email,
+          subject: render.subject,
+          text: render.text,
+          html: render.html
+        };
+        return mailTransporter.sendMail(mailOptions).then(function(email){
+          return findPr.value();
+        });
+      });
+      return emailPr;
     }
   },
   instanceMethods:{
@@ -76,7 +103,7 @@ var methods={
 
 module.exports.define=function(db, tableName, options){
     _options = options;
-    mailTransporter = nodeMailer.createTransport(options.email.smtp);
+    mailTransporter = nodeMailer.createTransport(options.email.smtp, options.email.nodeMailerOptions);
     var User = db.define(tableName, mergeModel({}), methods);
     UnicAction = db.define('user_unic_action', unicActionModel.model, unicActionModel.methods);
     User.hasMany(UnicAction,{as:"unicAction"});

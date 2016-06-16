@@ -9,7 +9,8 @@ Email template test
 var path = require('path');
 var EmailTemplate = require('email-templates').EmailTemplate;
 var templatesDir = path.resolve(__dirname, '.', 'emailTemplate')
-var templateConfirmEmail = new EmailTemplate(path.join(templatesDir, 'confirmEmail'))
+var templateValidateEmail = new EmailTemplate(path.join(templatesDir, 'validateEmail'))
+var templateResetPassword = new EmailTemplate(path.join(templatesDir, 'resetPassword'))
 
 var Sequelize = require('sequelize');
 var db = new Sequelize('postgresql://test1:test1@localhost/test1');
@@ -22,7 +23,8 @@ var User = userModel.define(db, 'user', {
                                             debug:true,
                                             debugReceiver:settings.receiver,
                                             template:{
-                                                      validateEmail: templateConfirmEmail
+                                                      validateEmail: templateValidateEmail,
+                                                      resetPassword: templateResetPassword
                                                     }
                                               }
                                           });
@@ -50,7 +52,6 @@ describe("Test user creation >>", function(){
      .then(function(result){
        should.not.exist(result);
      }).catch(function(error){
-       console.log("error ", error);
        should.exist(error);
      })
    })
@@ -108,11 +109,24 @@ describe("Test user creation >>", function(){
          should.exist(unic.limitDateValidity);
        });
     }).catch(function(error){
-      console.log("error ", error);
       should.not.exist(error);
     })
    })
-   /*it('test node mailer', function () {
+   it('send email to user to reset password', function () {
+     return User.resetPassword("tarama@gmail.com").then(function(result){
+       should.exist(result);
+    }).catch(function(error){
+      should.not.exist(error);
+    })
+   })
+   it('send email to user to reset password but user does not exist', function () {
+     return User.resetPassword("tarama76@gmail.com").then(function(result){
+       should.not.exist(result);
+    }).catch(function(error){
+      should.exist(error);
+    })
+   })
+   it('test node mailer', function () {
      var transporter = nodeMailer.createTransport(settings.smtp);
      var mailOptions = {
        from: settings.sender, // sender address
@@ -128,6 +142,6 @@ describe("Test user creation >>", function(){
        console.log(">> Error: ", error)
        should.not.exist(error);
      })
-   })*/
+   })
 
 })
