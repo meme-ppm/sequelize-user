@@ -14,7 +14,7 @@
     "sequelize"
   ],
   "author": "Mémé",
-  "license": "APACHE2",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/meme-ppm/squelize-user/issues"
   },
