@@ -20,6 +20,8 @@ var User = userModel.define(db, 'user', {
                                           email:{
                                             smtp:settings.smtp,
                                             sender: settings.sender,
+                                            nodeMailer:{debug:true},
+                                            send: false,
                                             debug:true,
                                             debugReceiver:settings.receiver,
                                             template:{
