@@ -36,7 +36,7 @@ describe("Test user creation >>", function(){
       });
    })
    it('create a user', function () {
-     return User.createUser({login:"tarama", email:"tarama@gmail.com", password:"toto"}).then(function(result){
+     return User.createUser({login:"tarama", email:"tarama@gmail.com", password:"totototo"}).then(function(result){
        should.exist(result);
        result.should.be.an('object');
        assert.equal(result.emailIsValid, false);
@@ -48,7 +48,7 @@ describe("Test user creation >>", function(){
     })
    })
    it('create a user with same login', function () {
-     return User.createUser({login:"tarama", email:"tarama32@gmail.com", password:"toto"})
+     return User.createUser({login:"tarama", email:"tarama32@gmail.com", password:"totototo"})
      .then(function(result){
        should.not.exist(result);
      }).catch(function(error){
@@ -56,7 +56,7 @@ describe("Test user creation >>", function(){
      })
    })
    it('create a user with same email', function () {
-     return User.createUser({login:"tarama32", email:"tarama@gmail.com", password:"toto"})
+     return User.createUser({login:"tarama32", email:"tarama@gmail.com", password:"totototo"})
      .then(function(result){
        should.not.exist(result);
      }).catch(function(error){
@@ -66,21 +66,21 @@ describe("Test user creation >>", function(){
    })
 
    it('find user tarama with good login/password', function () {
-     return User.findUser('tarama','toto').then(function(user){
+     return User.findUser('tarama','totototo').then(function(user){
         should.exist(user);
      }).catch(function(error){
         should.not.exist(error);
      })
    })
    it('find user tarama with good email/password', function () {
-     return User.findUser('tarama@gmail.com','toto').then(function(user){
+     return User.findUser('tarama@gmail.com','totototo').then(function(user){
         should.exist(user);
      }).catch(function(error){
         should.not.exist(error);
      })
    })
    it('find user tarama with wrong email and good password', function () {
-     return User.findUser('tarama3@gmail.com','toto').then(function(user){
+     return User.findUser('tarama3@gmail.com','totototo').then(function(user){
         should.not.exist(user);
      }).catch(function(error){
         should.exist(error);
@@ -88,7 +88,7 @@ describe("Test user creation >>", function(){
      })
    })
    it('find user tarama with good email and wrong password', function () {
-     return User.findUser('tarama@gmail.com','toto1').then(function(user){
+     return User.findUser('tarama@gmail.com','totototo1').then(function(user){
         should.not.exist(user);
      }).catch(function(error){
         should.exist(error);
@@ -96,7 +96,7 @@ describe("Test user creation >>", function(){
      })
    })
    it('create a user and test to find user from hash', function () {
-     return User.createUser({login:"tarama2", email:"tarama2@gmail.com", password:"toto"}).then(function(result){
+     return User.createUser({login:"tarama2", email:"tarama2@gmail.com", password:"totototo"}).then(function(result){
        should.exist(result);
        rPlain = result.get({plain:true});
        return User.findUserFromHash(rPlain.unicAction[0].hash).then(function(result){

@@ -11,7 +11,7 @@ var mergeModel = function(model){
         login: {type:Sequelize.STRING, allowNull:false, unique:true},
         email: {type:Sequelize.STRING, allowNull: false, unique:true},
         emailIsValid:{type: Sequelize.BOOLEAN, defaultValue: false},
-        password: {type: Sequelize.STRING, allowNull: false}
+        password: {type: Sequelize.STRING, allowNull: false, min:8}
     }, model);
 }
 
@@ -27,6 +27,9 @@ var methods={
     createUser: function(obj){
         obj.unicAction={action:'validateEmail'};
         var createPr =  this.create(obj, {include:[{model: UnicAction, as:'unicAction'}]});
+        if('sendMail' in _options && !options.sendMail){
+          return createPr;
+        }
         var emailTemplatePr = createPr.then(function(user){
           var userPlain = user.get({ plain: true});
           return _options.email.template.validateEmail.render({user: user, unicAction: user.unicAction[0]});
@@ -75,6 +78,9 @@ var methods={
         }
         return user.createUnicAction({action:"resetPassword"});
       })
+      if('sendMail' in _options && !options.sendMail){
+        return addUnicActionPr;
+      }
       var emailTemplatePr = addUnicActionPr.then(function(user){
         var userPlain = findPr.value().get({ plain: true});
         var unicActionPlain = addUnicActionPr.value().get({ plain: true});
@@ -104,8 +110,8 @@ var methods={
 module.exports.define=function(db, tableName, options){
     _options = options;
     mailTransporter = nodeMailer.createTransport(options.email.smtp, options.email.nodeMailerOptions);
-    var User = db.define(tableName, mergeModel({}), methods);
-    UnicAction = db.define('user_unic_action', unicActionModel.model, unicActionModel.methods);
+    var User = db.define(tableName, mergeModel(options.model), methods);
+    UnicAction = db.define(tableName+'_unic_action', unicActionModel.model, unicActionModel.methods);
     User.hasMany(UnicAction,{as:"unicAction"});
     return User;
 }
