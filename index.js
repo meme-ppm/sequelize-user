@@ -10,16 +10,14 @@ var stopEmailSending = function(){
   return 'send' in _options.email && !_options.email.send;
 }
 
-var mergeModel = function(model){
-    return Sequelize.Utils._.merge({
+var _model = {
         login: {type:Sequelize.STRING, allowNull:false, unique:true},
         email: {type:Sequelize.STRING, allowNull: false, unique:true},
         emailIsValid:{type: Sequelize.BOOLEAN, defaultValue: false},
         password: {type: Sequelize.STRING, allowNull: false, min:8}
-    }, model);
 }
 
-var methods={
+var _methods={
   hooks: {
     afterValidate: function(user){
       return bcrypt.hash(user.password).then(function(hash){
@@ -110,12 +108,16 @@ var methods={
   }
 }
 
+module.exports.model = _model;
 
-module.exports.define=function(db, tableName, options){
-    _options = options;
-    mailTransporter = nodeMailer.createTransport(options.email.smtp, options.email.nodeMailer);
-    var User = db.define(tableName, mergeModel(options.model), methods);
-    UnicAction = db.define(tableName+'_unic_action', unicActionModel.model, unicActionModel.methods);
+module.exports.methods = _methods;
+
+
+module.exports.define=function(db, fullModel){
+    _options = fullModel.options;
+    mailTransporter = nodeMailer.createTransport(_options.email.smtp, _options.email.nodeMailer);
+    var User = db.define(fullModel.tableName, fullModel.model, fullModel.methods);
+    UnicAction = db.define(fullModel.tableName+'_unic_action', unicActionModel.model, unicActionModel.methods);
     User.hasMany(UnicAction,{as:"unicAction"});
     return User;
 }

@@ -16,7 +16,11 @@ var Sequelize = require('sequelize');
 var db = new Sequelize('postgresql://test1:test1@localhost/test1');
 var userModel = require('../index.js');
 
-var User = userModel.define(db, 'user', {
+var User = userModel.define(db, {
+                                  tableName:'user',
+                                  model: userModel.model,
+                                  methods: userModel.methods,
+                                  options:{
                                           email:{
                                             smtp:settings.smtp,
                                             sender: settings.sender,
@@ -29,7 +33,8 @@ var User = userModel.define(db, 'user', {
                                                       resetPassword: templateResetPassword
                                                     }
                                               }
-                                          });
+                                          }
+                                      });
 
 describe("Test user creation >>", function(){
    it('initialize the DB', function () {

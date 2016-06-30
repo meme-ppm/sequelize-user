@@ -1,6 +1,6 @@
 {
   "name": "sequelize-user",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "manage a user table with built-in methods to check unicity, encrypt password, ",
   "main": "index.js",
   "scripts": {
